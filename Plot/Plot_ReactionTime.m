@@ -1,6 +1,6 @@
 clear all; close all; clc;
-addpath('ScanMatch');
-type = 'naturaldesign'; %waldo, wizzard, naturaldesign, array
+% ScanMatch is not used by this script.
+type = 'waldo'; %waldo, wizzard, naturaldesign, array
 
 %note: three datasets have not re-sequentalized; reorder first!
 % the first fixation is always the center; remove the first fix!
@@ -26,8 +26,8 @@ else
 end
     
 markerlist = {'r','g','b','c','k','m',     'r*-','g*-','b*-','c*-','k*-','m*-',   'ro-','go-','bo-','co-','ko-','mo-',  'r^-','g^-','b^-','c^-','k^-','m^-'};
-load(['/home/mengmi/Proj/Proj_VS/githubVS/datasets/' type '/psy/' type '.mat']);
-load(['/home/mengmi/Proj/Proj_VS/githubVS/datasets/' type '/psy/' type '_seq.mat']);
+load(['../datasets/' type '/psy/' type '.mat']);
+load(['../datasets/' type '/psy/' type '_seq.mat']);
 printpostfix = '.eps';
 printmode = '-depsc'; %-depsc
 printoption = '-r200'; %'-fillpage'
@@ -46,11 +46,11 @@ load(['DataForPlot/RvalueMatPerm_' type '.mat']);
 RvalueMat = 1- RvalueMat/MaxDist;
 RvalueMatPerm = 1-RvalueMatPerm/MaxDist;
 
-FirstRvalueMat = nanmean(RvalueMat,1);
-RvalueMat = nanmean(RvalueMat,2);
-ExpRvalueMat = nanmean(RvalueMat);
-ExpRvalueMatPerm = nanmean(RvalueMatPerm);
-ExpSS = nanmean(rSS);
+FirstRvalueMat = mean(RvalueMat,1, 'omitnan');
+RvalueMat = mean(RvalueMat,2, 'omitnan');
+ExpRvalueMat = mean(RvalueMat, 'omitnan');
+ExpRvalueMatPerm = mean(RvalueMatPerm, 'omitnan');
+ExpSS = mean(rSS, 'omitnan');
 
 % display(['Random eculi dist: ' num2str(ExpRvalueMat) ]);
 % display(['Random perm eucli dist: ' num2str(ExpRvalueMatPerm) ]);
@@ -66,7 +66,7 @@ hold on;
 set(gca,'TickDir','out');
 set(gca,'Box','Off');
 for s = 1: length(subjlist)
-    load(['/home/mengmi/Proj/Proj_VS/githubVS/datasets/' type '/psy/ProcessScanpath_' type  '/' subjlist{s} '_oracle.mat']);
+    load(['../datasets/' type '/psy/ProcessScanpath_' type  '/' subjlist{s} '_oracle.mat']);
     RTmat = FixData.Fix_time;
     
     for i = 1:NumStimuli
@@ -90,7 +90,7 @@ firstRT = RTstore(:, 1)/1000; %convert to seconds from ms
 bincounts = histc(firstRT,binranges);
 plot(binranges, bincounts/sum(bincounts),'k-','LineWidth',linewidth);
 %ydivision = [0:0.01:0.4];
-plot(ones(1,length(binranges))*nanmedian(RTstore(:,1))/1000, binranges,'k--','LineWidth',linewidth);
+plot(ones(1,length(binranges))*median(RTstore(:,1), 'omitnan')/1000, binranges,'k--','LineWidth',linewidth);
 %title('ReactionTimeFirstFix');
 xlabel('Time (s)','FontSize', 11);
 ylabel('Proportion','FontSize', 11);
@@ -123,10 +123,10 @@ set(hb,'PaperPositionMode','Auto','PaperUnits','Inches','PaperSize',[pos(3), pos
 
 display(['dataset: ' type ]);
 display('===============first fixation:');
-display(['median of reaction time: ' num2str(nanmedian(RTstore(:,1))) ]);
-display(['mean of reaction time: ' num2str(nanmean(RTstore(:,1))) ]);
-display(['STD of reaction time: ' num2str( nanstd(RTstore(:,1)) )]);
-display(['MSE of reaction time: ' num2str( nanstd(RTstore(:,1))/sqrt(length(RTstore(:,1))) )]);
+display(['median of reaction time: ' num2str(median(RTstore(:,1), 'omitnan')) ]);
+display(['mean of reaction time: ' num2str(mean(RTstore(:,1), 'omitnan')) ]);
+display(['STD of reaction time: ' num2str( std(RTstore(:,1), 'omitnan') )]);
+display(['MSE of reaction time: ' num2str( std(RTstore(:,1), 'omitnan')/sqrt(length(RTstore(:,1))) )]);
 display(['n for MSE: ' num2str( length(RTstore(:,1)) )]);
 % am = [nanmean(a(1:600)) nanmean(a(601:1200)) nanmean(a(1201:1800)) nanmean(a(1801:2400)) nanmean(a(2401:3000))];
 % bm = [nanmean(b(1:480)) nanmean(b(481:960)) nanmean(b(961:961+480-1)) nanmean(b(960+480: 960+480*2)) nanmean(b(960+480*2:end))];
@@ -142,7 +142,7 @@ binranges = [0:0.05:6];
 linewidth = 3;
 
 for s = 1: length(subjlist)
-    load(['/home/mengmi/Proj/Proj_VS/githubVS/datasets/' type '/psy/ProcessScanpath_' type  '/' subjlist{s} '_oracle.mat']);
+    load(['../datasets/' type '/psy/ProcessScanpath_' type  '/' subjlist{s} '_oracle.mat']);
     RTmat = FixData.Fix_time;
 
     for i = 1:NumStimuli
@@ -174,10 +174,10 @@ for f = 2:6
 end
 
 display('==================fixation interval');
-display(['median of reaction time: ' num2str(nanmedian(cummuRT)) ]);
-display(['mean of reaction time: ' num2str(nanmean(cummuRT)) ]);
-display(['STD of reaction time: ' num2str( nanstd(cummuRT,0,1) )]);
-display(['MSE of reaction time: ' num2str( nanstd(cummuRT,0,1)/sqrt(length(cummuRT)) )]);
+display(['median of reaction time: ' num2str(median(cummuRT, 'omitnan')) ]);
+display(['mean of reaction time: ' num2str(mean(cummuRT, 'omitnan')) ]);
+display(['STD of reaction time: ' num2str( std(cummuRT,0,1, 'omitnan') )]);
+display(['MSE of reaction time: ' num2str( std(cummuRT,0,1, 'omitnan')/sqrt(length(cummuRT)) )]);
 display(['n for MSE: ' num2str( length(cummuRT) )]);
 
 offsetcolor = 0.7/6;
@@ -234,7 +234,7 @@ binranges = [0:0.05:20];
 linewidth = 3;
 
 for s = 1: length(subjlist)
-    load(['/home/mengmi/Proj/Proj_VS/githubVS/datasets/' type '/psy/ProcessScanpath_' type  '/' subjlist{s} '_oracle.mat']);
+    load(['../datasets/' type '/psy/ProcessScanpath_' type  '/' subjlist{s} '_oracle.mat']);
     RTmat = FixData.Fix_time;
     RTmat = RTmat(seqInd);
     if strcmp(type, 'array')
@@ -277,10 +277,10 @@ firstRT = RTstore/1000; %convert to seconds from ms
 
 
 display('============time when target found');
-display(['median of reaction time: ' num2str(nanmedian(RTstore,1)) ]);
-display(['mean of reaction time: ' num2str(nanmean(RTstore,1)) ]);
-display(['STD of reaction time: ' num2str( nanstd(RTstore,0,1) )]);
-display(['MSE of reaction time: ' num2str( nanstd(RTstore,0,1)/sqrt(length(RTstore)) )]);
+display(['median of reaction time: ' num2str(median(RTstore,1, 'omitnan')) ]);
+display(['mean of reaction time: ' num2str(mean(RTstore,1, 'omitnan')) ]);
+display(['STD of reaction time: ' num2str( std(RTstore,0,1, 'omitnan') )]);
+display(['MSE of reaction time: ' num2str( std(RTstore,0,1, 'omitnan')/sqrt(length(RTstore)) )]);
 display(['n for MSE: ' num2str( length(RTstore) )]);
 
 
@@ -289,7 +289,7 @@ save(['DataForPlot/targetfoundRT_' type '.mat'],'firstRT');
 bincounts = histc(firstRT,binranges);
 plot(binranges, bincounts/sum(bincounts),'k','LineWidth',linewidth);
 %ydivision = [0:0.01:0.4];
-plot(ones(1,length(binranges))*nanmedian(RTstore(:,1))/1000, binranges,'k--','LineWidth',linewidth);
+plot(ones(1,length(binranges))*median(RTstore(:,1), 'omitnan')/1000, binranges,'k--','LineWidth',linewidth);
 %title('ReactionTimeFirstFix');
 xlabel('Time (s)','FontSize', 11);
 ylabel('Proportion','FontSize', 11);

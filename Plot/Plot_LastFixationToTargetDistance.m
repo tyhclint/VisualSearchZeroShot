@@ -1,6 +1,6 @@
 clear all; close all; clc;
 %addpath('ScanMatch');
-type = 'array'; %waldo, naturaldesign
+type = 'naturaldesign'; %waldo, naturaldesign
 
 %note: three datasets have not re-sequentalized; reorder first!
 % the first fixation is always the center; remove the first fix!
@@ -36,8 +36,8 @@ else
 end
     
 markerlist = {'r','g','b','c','k','m',     'r--','g--','b--','c--','k--','m--',   'ro-','go-','bo-','co-','ko-','mo-',  'r^-','g^-','b^-','c^-','k^-','m^-'};
-load(['/home/mengmi/Proj/Proj_VS/githubVS/datasets/' type '/psy/' type '.mat']);
-load(['/home/mengmi/Proj/Proj_VS/githubVS/datasets/' type '/psy/' type '_seq.mat']);
+load(['../datasets/' type '/psy/' type '.mat']);
+load(['../datasets/' type '/psy/' type '_seq.mat']);
 printpostfix = '.eps';
 printmode = '-depsc'; %-depsc
 printoption = '-r200'; %'-fillpage'
@@ -66,9 +66,9 @@ for lastn = 0:5
     for s = 1: length(subjlist)
         
         if ~strcmp(type,'array')
-            load(['/home/mengmi/Proj/Proj_VS/githubVS/datasets/' type '/psy/ProcessScanpath_' type  '/' subjlist{s} '_oracle.mat']);
+            load(['../datasets/' type '/psy/ProcessScanpath_' type  '/' subjlist{s} '_oracle.mat']);
         else
-            load(['/home/mengmi/Proj/Proj_VS/githubVS/datasets/' type '/psy/ProcessScanpath_' type  '/' subjlist{s} '_saccade.mat']);
+            load(['../datasets/' type '/psy/ProcessScanpath_' type  '/' subjlist{s} '_saccade.mat']);
         end
         PosX = FixData.Fix_posx;
         PosY = FixData.Fix_posy;
@@ -133,7 +133,7 @@ for lastn = 0:5
     totallastdist = totallastdist/156*5;
     bincounts = histc(totallastdist,binranges);
     plot(binranges, bincounts/sum(bincounts),'color',ones(1,3)*lastn*0.85/6,'LineWidth',linewidth);
-    handlesselected_median = [handlesselected_median nanmedian(totallastdist)];
+    handlesselected_median = [handlesselected_median median(totallastdist, 'omitnan')];
 end
 
 for lastn = 0:5
@@ -247,7 +247,7 @@ for lastn = 0:5
     bincounts = histc(totallastdist,binranges);
     plot(binranges, bincounts/sum(bincounts),'color',ones(1,3)*lastn*0.85/6,'LineWidth',linewidth);
     %plot(ones(1,length(binranges))*nanmedian(totallastdist), binranges,markerlist{lastn+7},'LineWidth',linewidth);
-    handlesselected_median = [handlesselected_median nanmedian(totallastdist)];
+    handlesselected_median = [handlesselected_median median(totallastdist, 'omitnan')];
 end
 
 for lastn = 0:5
